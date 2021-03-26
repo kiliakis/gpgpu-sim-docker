@@ -69,7 +69,7 @@ RUN cd $HOME && git clone https://github.com/accel-sim/gpu-app-collection.git
     
 COPY data/setup_environment $HOME/gpu-app-collection/src/
 ENV BINDIR=/root/gpu-app-collection/src/..//bin/10.1    \
-    MAKE_ARGS= GENCODE_SM10= GENCODE_SM13= GENCODE_SM20= GENCODE_SM20= CUBLAS_LIB=cublas_static CUDNN_LIB=cudnn_static  \
+    MAKE_ARGS="GENCODE_SM10= GENCODE_SM13= GENCODE_SM20= GENCODE_SM20= CUBLAS_LIB=cublas_static CUDNN_LIB=cudnn_static"  \
     GPUAPPS_SETUP_ENVIRONMENT_WAS_RUN=1 \
     GPUAPPS_ROOT=/root/gpu-app-collection/src/../   \
     CUDA_PATH=/usr/local/cuda \
@@ -78,9 +78,9 @@ ENV BINDIR=/root/gpu-app-collection/src/..//bin/10.1    \
     CUDA_VERSION_MAJOR=10   \
     CUDAHOME=/usr/local/cuda    \
     BINSUBDIR=release   \
-    CUDA_CPPFLAGS= -gencode=arch=compute_30,code=compute_30 -gencode=arch=compute_35,code=compute_35 -gencode=arch=compute_50,code=compute_50 -gencode=arch=compute_60,code=compute_60 -gencode=arch=compute_62,code=compute_62 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_75,code=compute_75 --cudart shared   \
-    NVCC_ADDITIONAL_ARGS=--cudart shared    \
-    GENCODE_FLAGS= -gencode=arch=compute_30,code=compute_30 -gencode=arch=compute_35,code=compute_35 -gencode=arch=compute_50,code=compute_50 -gencode=arch=compute_60,code=compute_60 -gencode=arch=compute_62,code=compute_62 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_75,code=compute_75
+    CUDA_CPPFLAGS="-gencode=arch=compute_30,code=compute_30 -gencode=arch=compute_35,code=compute_35 -gencode=arch=compute_50,code=compute_50 -gencode=arch=compute_60,code=compute_60 -gencode=arch=compute_62,code=compute_62 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_75,code=compute_75 --cudart shared"   \
+    NVCC_ADDITIONAL_ARGS="--cudart shared"    \
+    GENCODE_FLAGS="-gencode=arch=compute_30,code=compute_30 -gencode=arch=compute_35,code=compute_35 -gencode=arch=compute_50,code=compute_50 -gencode=arch=compute_60,code=compute_60 -gencode=arch=compute_62,code=compute_62 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_75,code=compute_75"
 
 RUN export CUDA_INSTALL_PATH=/usr/local/cuda && \
     cd gpu-app-collection && \
