@@ -67,8 +67,8 @@ RUN cd $HOME/NVIDIA_CUDA-10.1_Samples && make -j -i -k; exit 0
 #install gpu-app-collection
 RUN export CUDA_INSTALL_PATH=/usr/local/cuda; \
     cd $HOME && git clone https://github.com/accel-sim/gpu-app-collection.git; \
-    cd gpu-app-collection; \
-    . src/setup_environment; \
+    cd gpu-app-collection && \
+    /bin/bash -c "source ./src/setup_environment" && \
     echo "GPUAPPS_SETUP_ENVIRONMENT_WAS_RUN=$GPUAPPS_SETUP_ENVIRONMENT_WAS_RUN" && \
     echo "GPUAPPS_ROOT=$GPUAPPS_ROOT" && \
     echo "CUDA_PATH=$CUDA_PATH" && \
@@ -85,6 +85,7 @@ RUN export CUDA_INSTALL_PATH=/usr/local/cuda; \
 # make all -i -j -C ./src; \
 # sh get_data.sh; exit 0
 
+    # . src/setup_environment; \
 # /bin/bash -c "source ./src/setup_environment"; \
 
 # setup gcc versions
