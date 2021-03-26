@@ -1,1 +1,1 @@
-docker start gpgpusim
+docker start gpgpusim-1.0

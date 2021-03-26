@@ -1,0 +1,1 @@
+docker run --privileged --cpus 10 --gpus all -ti --rm --name gpgpusim-1.0 kiliakis/gpgpusim-1.0

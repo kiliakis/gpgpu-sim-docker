@@ -40,7 +40,7 @@ RUN apt-get install -yq git
 # install dot files
 RUN cd $HOME/git && git clone --branch=gpusim https://github.com/kiliakis/config.git && cd config && \
 cp -r .bashrc .vim .vimrc .gitconfig .git-* $HOME/ 
-source $HOME/.bashrc
+# source $HOME/.bashrc
 
 #install cuda
 COPY data/* $HOME/install
@@ -48,7 +48,7 @@ RUN cd install && sh cuda_10.1.105_418.39_linux.run --silent --override --sample
 # --toolkit --toolkitpath=/root/install/cuda-10.1 
 
 #compile sdk
-RUN cd $HOME/NVIDIA_CUDA-10.1_Samples && make -k
+RUN cd $HOME/NVIDIA_CUDA-10.1_Samples && make -j -i -k; exit 0  
 # RUN cd $HOME/install && 
 
 
@@ -65,12 +65,12 @@ RUN cd $HOME/NVIDIA_CUDA-10.1_Samples && make -k
 #    git checkout master
 
 #install gpu-app-collection
-RUN export CUDA_INSTALL_PATH=/usr/local/cuda && \
-    cd $HOME && git clone https://github.com/accel-sim/gpu-app-collection.git && \
-    cd gpu-app-collection && \
-    source ./src/setup_environment && \
-    make all -i -j -C ./src && \
-    make data
+# RUN export CUDA_INSTALL_PATH=/usr/local/cuda && \
+#     cd $HOME && git clone https://github.com/accel-sim/gpu-app-collection.git && \
+#     cd gpu-app-collection && \
+#     /bin/bash -c "source ./src/setup_environment" && \
+#     make all -i -j -C ./src && \
+#     make data
 
 
 # setup gcc versions
