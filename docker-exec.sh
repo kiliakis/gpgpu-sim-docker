@@ -1,2 +1,2 @@
 #!/bin/bash
-docker exec -it bitcoin-3.0 /bin/bash
+docker exec -it gpgpusim-1.0 /bin/bash

@@ -1,4 +1,4 @@
 #!/bin/bash
 
-docker build -t bitcoin:3.0 .
+docker build -t gpgpusim:1.0 .
 
