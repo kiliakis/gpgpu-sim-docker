@@ -69,8 +69,21 @@ RUN export CUDA_INSTALL_PATH=/usr/local/cuda; \
     cd $HOME && git clone https://github.com/accel-sim/gpu-app-collection.git; \
     cd gpu-app-collection; \
     . src/setup_environment; \
-    make all -i -j -C ./src; \
-    sh get_data.sh; exit 0
+    echo "GPUAPPS_SETUP_ENVIRONMENT_WAS_RUN=$GPUAPPS_SETUP_ENVIRONMENT_WAS_RUN" &&
+    echo "GPUAPPS_ROOT=$GPUAPPS_ROOT" &&
+    echo "CUDA_PATH=$CUDA_PATH" &&
+    echo "NVDIA_COMPUTE_SDK_LOCATION=$NVDIA_COMPUTE_SDK_LOCATION" &&
+    echo "CUDA_VERSION=$CUDA_VERSION" &&
+    echo "CUDA_VERSION_MAJOR=$CUDA_VERSION_MAJOR" &&
+    echo "CUDAHOME=$CUDAHOME" &&
+    echo "BINDIR=$BINDIR" &&
+    echo "BINSUBDIR=$BINSUBDIR" &&
+    echo "MAKE_ARGS=$MAKE_ARGS" &&
+    echo "CUDA_CPPFLAGS=$CUDA_CPPFLAGS" &&
+    echo "NVCC_ADDITIONAL_ARGS=&NVCC_ADDITIONAL_ARGS" &&
+    echo "GENCODE_FLAGS=$GENCODE_FLAGS" &&
+# make all -i -j -C ./src; \
+# sh get_data.sh; exit 0
 
 # /bin/bash -c "source ./src/setup_environment"; \
 
