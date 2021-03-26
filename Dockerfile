@@ -69,7 +69,6 @@ RUN cd $HOME && git clone https://github.com/accel-sim/gpu-app-collection.git
     
 COPY data/setup_environment $HOME/gpu-app-collection/src/
 RUN cd gpu-app-collection && \
-    cp $HOME/install/setup_environment src/ && \
     /bin/bash -c "source ./src/setup_environment"
 # make all -i -j -C ./src; \
 # sh get_data.sh; exit 0
