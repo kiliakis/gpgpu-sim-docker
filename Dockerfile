@@ -1,20 +1,20 @@
 FROM nvidia/cuda:10.1-devel-ubuntu16.04
 
-USER ROOT
+USER root
 
 ENV HOME="/root" \
     GITUSER="kiliakis" \
-    CPUCORES="8" \
+    CPUCORES="10" \
     HOST="ubuntu" \
     DOMAIN="local" 
 
 WORKDIR $HOME
 
 # make directories
-run mkdir $HOME/git && mkdir $HOME/install
+RUN mkdir $HOME/git && mkdir $HOME/install
 
 # copy files
-COPY data/* $HOME/install/
+# COPY data/* $HOME/install/
 # COPY data/.bashrc data/.git-completion.bash data/.git-prompt.sh $HOME/
 
 # install packages
@@ -22,16 +22,36 @@ RUN apt-get update -y && apt-get install -yq build-essential apt-utils wget vim 
     software-properties-common xutils-dev build-essential bison \
     zlib1g-dev flex libglu1-mesa-dev binutils-gold libboost-system-dev \
     libboost-filesystem-dev libopenmpi-dev openmpi-bin libopenmpi-dev \
-    gfortran torque-server torque-client torque-mom torque-pam \
-    python-pip python-dev
+    gfortran torque-server torque-client torque-mom torque-pam
 
+# python-pip python-dev
 # install python packages
-RUN pip install pyyaml numpy cycler
+RUN add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update -y && \
+    apt-get -yq install python3.7 python python-pip
+# python3.7-pip && \
+# python3.7 -m pip install pyyaml numpy cycler
+
+RUN apt-get install -yq git
+
+#RUN cd git && git clone https://github.com/NVIDIA/cuda-samples.git cuda-11.2-samples && \
+#    cd cuda-11.2-samples && git checkout -b v11.2
 
 # install dot files
-RUN cd $HOME/git && git clone --branch=gpusim https://github.com/${GITUSER}/config.git && cd config && \
-    cp -r .bashrc .vim .vimrc .gitconfig .git-* $HOME/ && \
-    source $HOME/.bashrc
+RUN cd $HOME/git && git clone --branch=gpusim https://github.com/kiliakis/config.git && cd config && \
+cp -r .bashrc .vim .vimrc .gitconfig .git-* $HOME/ 
+source $HOME/.bashrc
+
+#install cuda
+COPY data/* $HOME/install
+RUN cd install && sh cuda_10.1.105_418.39_linux.run --silent --override --samples --samplespath=/root
+# --toolkit --toolkitpath=/root/install/cuda-10.1 
+
+#compile sdk
+RUN cd $HOME/NVIDIA_CUDA-10.1_Samples && make -k
+# RUN cd $HOME/install && 
+
+
 
 # install gpgpusim (optional)
 # RUN cd $HOME && git clone https://github.com/$GITUSER/gpgpu-sim.git && \
@@ -40,12 +60,18 @@ RUN cd $HOME/git && git clone --branch=gpusim https://github.com/${GITUSER}/conf
 #     make
 
 # install simulations-gpgpu
-RUN cd $HOME && git clone --recurse-submodules https://github.com/$GITUSER/simulations-gpgpu.git && \
-    cd simulations-gpgpu/benchmarks/src/cuda/rodinia-3.1/ && \
-    git checkout master
+# RUN cd $HOME && git clone --recurse-submodules https://github.com/kiliakis/simulations-gpgpu.git && \
+#    cd simulations-gpgpu/benchmarks/src/cuda/rodinia-3.1/ && \
+#    git checkout master
 
 #install gpu-app-collection
-# RUN cd $HOME && git clone https://github.com/$GITUSER/gpu-app-collection.git
+RUN export CUDA_INSTALL_PATH=/usr/local/cuda && \
+    cd $HOME && git clone https://github.com/accel-sim/gpu-app-collection.git && \
+    cd gpu-app-collection && \
+    source ./src/setup_environment && \
+    make all -i -j -C ./src && \
+    make data
+
 
 # setup gcc versions
 # RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 60 && \
