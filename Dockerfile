@@ -43,7 +43,7 @@ cp -r .bashrc .vim .vimrc .gitconfig .git-* $HOME/
 # source $HOME/.bashrc
 
 #install cuda
-COPY data/* $HOME/install
+COPY data/cuda_10.1.105_418.39_linux.run $HOME/install/
 RUN cd install && sh cuda_10.1.105_418.39_linux.run --silent --override --samples --samplespath=/root
 # --toolkit --toolkitpath=/root/install/cuda-10.1 
 
@@ -65,10 +65,10 @@ RUN cd $HOME/NVIDIA_CUDA-10.1_Samples && make -j -i -k; exit 0
 #    git checkout master
 
 #install gpu-app-collection
-# COPY data/setup_environment
-RUN export CUDA_INSTALL_PATH=/usr/local/cuda; \
-    cd $HOME && git clone https://github.com/accel-sim/gpu-app-collection.git; \
-    cd gpu-app-collection && \
+RUN cd $HOME && git clone https://github.com/accel-sim/gpu-app-collection.git
+    
+COPY data/setup_environment $HOME/gpu-app-collection/src/
+RUN cd gpu-app-collection && \
     cp $HOME/install/setup_environment src/ && \
     /bin/bash -c "source ./src/setup_environment"
 # make all -i -j -C ./src; \
