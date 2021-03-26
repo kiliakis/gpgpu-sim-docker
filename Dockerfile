@@ -68,7 +68,8 @@ RUN cd $HOME/NVIDIA_CUDA-10.1_Samples && make -j -i -k; exit 0
 RUN cd $HOME && git clone https://github.com/accel-sim/gpu-app-collection.git
     
 COPY data/setup_environment $HOME/gpu-app-collection/src/
-RUN cd gpu-app-collection && \
+RUN export CUDA_INSTALL_PATH=/usr/local/cuda && \
+    cd gpu-app-collection && \
     /bin/bash -c "source ./src/setup_environment"
 # make all -i -j -C ./src; \
 # sh get_data.sh; exit 0
