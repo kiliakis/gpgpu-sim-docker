@@ -85,7 +85,7 @@ RUN export CUDA_INSTALL_PATH=/usr/local/cuda && \
     export BINSUBDIR=release  && \
     export CUDA_CPPFLAGS="-gencode=arch=compute_30,code=compute_30 -gencode=arch=compute_35,code=compute_35 -gencode=arch=compute_50,code=compute_50 -gencode=arch=compute_60,code=compute_60 -gencode=arch=compute_62,code=compute_62 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_75,code=compute_75 --cudart shared"  && \
     export NVCC_ADDITIONAL_ARGS="--cudart shared"   && \
-    export GENCODE_FLAGS="-gencode=arch=compute_30,code=compute_30 -gencode=arch=compute_35,code=compute_35 -gencode=arch=compute_50,code=compute_50 -gencode=arch=compute_60,code=compute_60 -gencode=arch=compute_62,code=compute_62 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_75,code=compute_75"
+    export GENCODE_FLAGS="-gencode=arch=compute_30,code=compute_30 -gencode=arch=compute_35,code=compute_35 -gencode=arch=compute_50,code=compute_50 -gencode=arch=compute_60,code=compute_60 -gencode=arch=compute_62,code=compute_62 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_75,code=compute_75" && \
     make all -i -j -C ./src; exit 0
 #     sh get_data.sh; exit 0
 
