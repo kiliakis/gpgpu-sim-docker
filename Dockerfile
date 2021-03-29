@@ -23,17 +23,21 @@ RUN apt-get update -y && apt-get install -yq build-essential apt-utils wget vim 
     zlib1g-dev flex libglu1-mesa-dev binutils-gold libboost-system-dev \
     libboost-filesystem-dev libopenmpi-dev openmpi-bin libopenmpi-dev \
     gfortran torque-server torque-client torque-mom torque-pam \
-    freeglut3 freeglut3-dev git
+    freeglut3 freeglut3-dev git curl
 
 # python-pip python-dev
 # install python packages
 RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update -y && \
-    apt-get -yq install python3.7 python python-pip
+    apt-get -yq install python3.7 python
+
+RUN cd $HOME/install && curl https://bootstrap.pypa.io/2.7/get-pip.py -o get && \
+    python get-pip.py && \
+    python -m pip install pyyaml numpy cycler
+
 # python3.7-pip && \
 # python3.7 -m pip install pyyaml numpy cycler
 
-RUN apt-get install -yq git
 
 #RUN cd git && git clone https://github.com/NVIDIA/cuda-samples.git cuda-11.2-samples && \
 #    cd cuda-11.2-samples && git checkout -b v11.2
