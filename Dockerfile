@@ -22,7 +22,8 @@ RUN apt-get update -y && apt-get install -yq build-essential apt-utils wget vim 
     software-properties-common xutils-dev build-essential bison \
     zlib1g-dev flex libglu1-mesa-dev binutils-gold libboost-system-dev \
     libboost-filesystem-dev libopenmpi-dev openmpi-bin libopenmpi-dev \
-    gfortran torque-server torque-client torque-mom torque-pam
+    gfortran torque-server torque-client torque-mom torque-pam \
+    freeglut3 freeglut3-dev git
 
 # python-pip python-dev
 # install python packages
@@ -48,7 +49,7 @@ RUN cd install && sh cuda_10.1.105_418.39_linux.run --silent --override --sample
 # --toolkit --toolkitpath=/root/install/cuda-10.1 
 
 #compile sdk
-RUN cd $HOME/NVIDIA_CUDA-10.1_Samples && make -j -i -k; exit 0  
+RUN cd $HOME/NVIDIA_CUDA-10.1_Samples && make -j -i -k; exit 0
 # RUN cd $HOME/install && 
 
 
@@ -89,6 +90,10 @@ RUN export CUDA_INSTALL_PATH=/usr/local/cuda && \
     cd $HOME/gpu-app-collection && \
     make all -i -j -C ./src; exit 0
 #     sh get_data.sh; exit 0
+
+RUN ln -s $HOME/NVIDIA_CUDA-10.1_Samples/bin/x86_64/linux/release $HOME/gpu-app-collection/bin/10.1/release/sdk
+RUN cd $HOME/gpu-app-collection && git clone https://github.com/kiliakis/native-gpu-benchmarks.git
+COPY data/finalize_installation.sh $HOME/
 
 # . src/setup_environment; \
 # /bin/bash -c "source ./src/setup_environment"; \
