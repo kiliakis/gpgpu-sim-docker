@@ -61,26 +61,26 @@ RUN cd /root/NVIDIA_CUDA-10.1_Samples && make -j -i -k; exit 0
 RUN cd /root && git clone https://github.com/accel-sim/gpu-app-collection.git
     
 
-RUN export CUDA_INSTALL_PATH=/usr/local/cuda && \
-    cd gpu-app-collection && \
-    /bin/bash -c "source ./src/setup_environment"
-RUN export CUDA_INSTALL_PATH=/usr/local/cuda && \
-    export BINDIR=/root/gpu-app-collection/src/..//bin/10.1   && \
-    export MAKE_ARGS="GENCODE_SM10= GENCODE_SM13= GENCODE_SM20= GENCODE_SM20= CUBLAS_LIB=cublas_static CUDNN_LIB=cudnn_static" && \
-    export GPUAPPS_SETUP_ENVIRONMENT_WAS_RUN=1&& \
-    export GPUAPPS_ROOT=/root/gpu-app-collection/src/../  && \
-    export CUDA_PATH=/usr/local/cuda&& \
-    export NVDIA_COMPUTE_SDK_LOCATION=&& \
-    export CUDA_VERSION=10.1  && \
-    export CUDA_VERSION_MAJOR=10  && \
-    export CUDAHOME=/usr/local/cuda   && \
-    export BINSUBDIR=release  && \
-    export CUDA_CPPFLAGS="-gencode=arch=compute_30,code=compute_30 -gencode=arch=compute_35,code=compute_35 -gencode=arch=compute_50,code=compute_50 -gencode=arch=compute_60,code=compute_60 -gencode=arch=compute_62,code=compute_62 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_75,code=compute_75 --cudart shared"  && \
-    export NVCC_ADDITIONAL_ARGS="--cudart shared"   && \
-    export GENCODE_FLAGS="-gencode=arch=compute_30,code=compute_30 -gencode=arch=compute_35,code=compute_35 -gencode=arch=compute_50,code=compute_50 -gencode=arch=compute_60,code=compute_60 -gencode=arch=compute_62,code=compute_62 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_75,code=compute_75" && \
-    cd /root/gpu-app-collection && \
-    make all -i -j -C ./src; exit 0
+# RUN export CUDA_INSTALL_PATH=/usr/local/cuda && \
+#     cd gpu-app-collection && \
+#     /bin/bash -c "source ./src/setup_environment"
+# RUN export CUDA_INSTALL_PATH=/usr/local/cuda && \
+#     export BINDIR=/root/gpu-app-collection/src/..//bin/10.1   && \
+#     export MAKE_ARGS="GENCODE_SM10= GENCODE_SM13= GENCODE_SM20= GENCODE_SM20= CUBLAS_LIB=cublas_static CUDNN_LIB=cudnn_static" && \
+#     export GPUAPPS_SETUP_ENVIRONMENT_WAS_RUN=1&& \
+#     export GPUAPPS_ROOT=/root/gpu-app-collection/src/../  && \
+#     export CUDA_PATH=/usr/local/cuda&& \
+#     export NVDIA_COMPUTE_SDK_LOCATION=&& \
+#     export CUDA_VERSION=10.1  && \
+#     export CUDA_VERSION_MAJOR=10  && \
+#     export CUDAHOME=/usr/local/cuda   && \
+#     export BINSUBDIR=release  && \
+#     export CUDA_CPPFLAGS="-gencode=arch=compute_30,code=compute_30 -gencode=arch=compute_35,code=compute_35 -gencode=arch=compute_50,code=compute_50 -gencode=arch=compute_60,code=compute_60 -gencode=arch=compute_62,code=compute_62 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_75,code=compute_75 --cudart shared"  && \
+#     export NVCC_ADDITIONAL_ARGS="--cudart shared"   && \
+#     export GENCODE_FLAGS="-gencode=arch=compute_30,code=compute_30 -gencode=arch=compute_35,code=compute_35 -gencode=arch=compute_50,code=compute_50 -gencode=arch=compute_60,code=compute_60 -gencode=arch=compute_62,code=compute_62 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_75,code=compute_75" && \
+#     cd /root/gpu-app-collection && \
+#     make all -i -j -C ./src; exit 0
 
-RUN ln -s /root/NVIDIA_CUDA-10.1_Samples/bin/x86_64/linux/release /root/gpu-app-collection/bin/10.1/release/sdk && \
-    cd /root/gpu-app-collection && git clone https://github.com/kiliakis/native-gpu-benchmarks.git
+# RUN ln -s /root/NVIDIA_CUDA-10.1_Samples/bin/x86_64/linux/release /root/gpu-app-collection/bin/10.1/release/sdk && \
+#     cd /root/gpu-app-collection && git clone https://github.com/kiliakis/native-gpu-benchmarks.git
 
