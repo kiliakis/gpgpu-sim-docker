@@ -31,7 +31,7 @@ RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update -y && \
     apt-get -yq install python3.7 python
 
-RUN cd $HOME/install && curl https://bootstrap.pypa.io/2.7/get-pip.py -o get && \
+RUN cd $HOME/install && curl https://bootstrap.pypa.io/2.7/get-pip.py -o get-pip.py && \
     python get-pip.py && \
     python -m pip install pyyaml numpy cycler
 
