@@ -58,7 +58,8 @@ RUN cd install && sh cuda_10.1.105_418.39_linux.run --silent --override --sample
 RUN cd /root/NVIDIA_CUDA-10.1_Samples && make -j -i -k; exit 0
 
 #install gpu-app-collection
-RUN cd /root && git clone https://github.com/accel-sim/gpu-app-collection.git
+RUN cd /root && git clone https://github.com/accel-sim/gpu-app-collection.git && \
+    cd /gpu-app-collection && git clone https://github.com/kiliakis/native-gpu-benchmarks.git
     
 
 # RUN export CUDA_INSTALL_PATH=/usr/local/cuda && \
