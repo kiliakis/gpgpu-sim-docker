@@ -1,1 +1,1 @@
-docker build -t kiliakis/gpgpusim:1.0 .
+docker build -t kiliakis/gpgpusim-vm:1.0 .
