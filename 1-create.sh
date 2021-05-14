@@ -1,1 +1,1 @@
-docker create --privileged --cpus 10 --gpus all --rm --name gpgpusim-1.0 kiliakis/gpgpusim:1.0
+docker create --privileged --cpus 40 --rm --name gpgpusim-vm-1.0 kiliakis/gpgpusim-vm:1.0

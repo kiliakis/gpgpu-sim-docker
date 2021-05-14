@@ -2,27 +2,18 @@
 # FROM nvidia/cuda:10.1-devel-ubuntu16.04
 FROM ubuntu:14.04
 
-USER root
 
-ENV HOME="/root" \
-    GITUSER="kiliakis" \
-    REMOTEUSER="kiliakis" \
-    CPUCORES="40" \
-    HOST="ubuntu" \
-    DOMAIN="local" 
-
-WORKDIR $HOME
-
-# make directories
-RUN mkdir $HOME/git && mkdir $HOME/install
-
-# copy data
-COPY data/gpgpusim-vm-data/install/* $HOME/install/
-COPY data/gpgpusim-vm-data/simulations-gpgpu $HOME/ 
-# COPY data/cuda_9.0.176_384.81_linux.run $HOME/install/
+# ENV HOME="/home/kiliakis" \
+#     GITUSER="kiliakis" \
+#     REMOTEUSER="kiliakis" \
+#     CPUCORES="40" \
+#     HOST="ubuntu" \
+#     IP="172.17.0.3" \
+#     DOMAIN="local" 
+# COPY data/cuda_9.0.176_384.81_linux.run /home/kiliakis/install/
 # copy files
-# COPY data/* $HOME/install/
-# COPY data/.bashrc data/.git-completion.bash data/.git-prompt.sh $HOME/
+# COPY data/* /home/kiliakis/install/
+# COPY data/.bashrc data/.git-completion.bash data/.git-prompt.sh /home/kiliakis/
 
 # install packages
 RUN apt-get update -y && apt-get install -yq build-essential apt-utils wget vim htop \
@@ -30,114 +21,93 @@ RUN apt-get update -y && apt-get install -yq build-essential apt-utils wget vim 
     zlib1g-dev flex libglu1-mesa-dev binutils-gold libboost-system-dev \
     libboost-filesystem-dev libopenmpi-dev openmpi-bin libopenmpi-dev \
     gfortran torque-server torque-client torque-mom torque-pam \
-    freeglut3 freeglut3-dev git curl python
+    freeglut3 freeglut3-dev git curl python python-pip psmisc sudo
+
+RUN useradd -ms /bin/bash kiliakis && echo "kiliakis:kiliakis" | chpasswd && passwd -d kiliakis && \
+    adduser --disabled-password kiliakis sudo && \
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+USER kiliakis
+WORKDIR /home/kiliakis
+
+RUN mkdir /home/kiliakis/git && mkdir /home/kiliakis/install && mkdir /home/kiliakis/simulations-gpgpu
+
+# make directories
+# RUN mkdir /home/kiliakis/git && mkdir /home/kiliakis/install && mkdir /home/kiliakis/simulations-gpgpu
+
+# copy data
+COPY --chown=kiliakis:kiliakis data/gpgpusim-vm-data/install /home/kiliakis/install/
+COPY --chown=kiliakis:kiliakis data/gpgpusim-vm-data/simulations-gpgpu /home/kiliakis/simulations-gpgpu/
+
 
 # python-pip python-dev
 # install python packages
 # RUN add-apt-repository ppa:deadsnakes/ppa && \
-    # apt-get update -y && \
-    # apt-get -yq install python3.7 python
+# apt-get update -y && \
+# apt-get -yq install python3.7
 
-# RUN cd $HOME/install && curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py && \
-    # python get-pip.py && \
-RUN python -m pip install pyyaml numpy cycler
-
-# python3.7-pip && \
-# python3.7 -m pip install pyyaml numpy cycler
+cd /home/kiliakis/install && curl https://bootstrap.pypa.io/pip/3.4/get-pip.py -o get-pip.py && \
+    python3 get-pip.py --user && \
+    python3 -m pip install --user pyyaml numpy cycler
 
 
 #RUN cd git && git clone https://github.com/NVIDIA/cuda-samples.git cuda-11.2-samples && \
 #    cd cuda-11.2-samples && git checkout -b v11.2
 
 # install dot files
-RUN cd $HOME/git && git clone --branch=gpusim https://github.com/kiliakis/config.git && cd config && \
-cp -r .bashrc .vim .vimrc .gitconfig .git-* $HOME/ 
-# source $HOME/.bashrc
+RUN cd /home/kiliakis/git && git clone --branch=gpusim https://github.com/kiliakis/config.git && cd config && \
+cp -r .bashrc .vim .vimrc .gitconfig .git-* /home/kiliakis/ 
+# source /home/kiliakis/.bashrc
 
 #install cuda
+COPY --chown=kiliakis:kiliakis data/gpgpusim-vm-data/cuda_9.0.176_384.81_linux-run /home/kiliakis/install/
 
-RUN cd install && sh cuda_9.0.176_384.81_linux.run --silent --override --samples --samplespath=/root
-# --toolkit --toolkitpath=/root/install/cuda-10.1 
+RUN cd /home/kiliakis/install && sudo sh cuda_9.0.176_384.81_linux-run --silent --override --samples --samplespath=/home/kiliakis/ --toolkit --toolkitpath=/usr/local/cuda-9.0
+
+# ENV SERVER="ubuntu"
 
 
 # torque set-up
-RUN /etc/init.d/torque-mom stop \
-    /etc/init.d/torque-scheduler stop \
-    /etc/init.d/torque-server stop \
-    pbs_server -f -t create \
-    killall pbs_server \
-    echo "$IP    ${HOST}.${DOMAIN}" >> /etc/hosts \
-    echo "${HOST}.${DOMAIN}" > /etc/torque/server_name \
-    echo "${HOST}.${DOMAIN}" > /var/spool/torque/server_priv/acl_svr/acl_hosts \
-    echo "root@${HOST}.${DOMAIN}" > /var/spool/torque/server_priv/acl_svr/operators \
-    echo "root@${HOST}.${DOMAIN}" > /var/spool/torque/server_priv/acl_svr/managers \
-    echo "${HOST}.${DOMAIN} np=${CPUCORES}" > /var/spool/torque/server_priv/nodes \
-    echo "${HOST}.${DOMAIN}" > /var/spool/torque/mom_priv/config \
-    /etc/init.d/torque-server start \
-    /etc/init.d/torque-scheduler start \
-    /etc/init.d/torque-mom start \
-    qmgr -c 'set server scheduling = true' \
-    qmgr -c 'set server keep_completed = 60' \
-    qmgr -c 'set server mom_job_sync = true' \
-    qmgr -c 'create queue batch' \
-    qmgr -c 'set queue batch queue_type = execution' \
-    qmgr -c 'set queue batch started = true' \
-    qmgr -c 'set queue batch enabled = true' \
-    qmgr -c 'set queue batch resources_default.walltime = 1:00:00' \
-    qmgr -c 'set queue batch resources_default.nodes = 1' \
-    qmgr -c 'set server default_queue = batch' \
-    qmgr -c 'set server submit_hosts = ${HOST}' \
-    qmgr -c 'set server allow_node_submit = true'
+# RUN sudo /etc/init.d/torque-mom stop && \
+#     sudo /etc/init.d/torque-scheduler stop && \
+#     sudo /etc/init.d/torque-server stop && \
+#     sudo pbs_server -f -t create && \
+#     sudo killall pbs_server && \
+#     sudo echo "172.17.0.3 ubuntu.local" >> /etc/hosts && \
+#     sudo echo "ubuntu.local" > /etc/torque/server_name && \
+#     sudo echo "ubuntu.local" > /var/spool/torque/server_priv/acl_svr/acl_hosts && \
+#     sudo echo "root@ubuntu.local" > /var/spool/torque/server_priv/acl_svr/operators && \
+#     sudo echo "root@ubuntu.local" > /var/spool/torque/server_priv/acl_svr/managers && \
+#     sudo echo "ubuntu.local np=40" > /var/spool/torque/server_priv/nodes && \
+#     sudo echo "ubuntu.local" > /var/spool/torque/mom_priv/config && \
+#     sudo /etc/init.d/torque-server start && \
+#     sudo /etc/init.d/torque-scheduler start && \
+#     sudo /etc/init.d/torque-mom start && \
+#     sudo qmgr -c 'set server scheduling = true' && \
+#     sudo qmgr -c 'set server keep_completed = 60' && \
+#     sudo qmgr -c 'set server mom_job_sync = true' && \
+#     sudo qmgr -c 'create queue batch' && \
+#     sudo qmgr -c 'set queue batch queue_type = execution' && \
+#     sudo qmgr -c 'set queue batch started = true' && \
+#     sudo qmgr -c 'set queue batch enabled = true' && \
+#     sudo qmgr -c 'set queue batch resources_default.walltime = 1:00:00' && \
+#     sudo qmgr -c 'set queue batch resources_default.nodes = 1' && \
+#     sudo qmgr -c 'set server default_queue = batch' && \
+#     sudo qmgr -c 'set server submit_hosts = ubuntu' && \
+#     sudo qmgr -c 'set server allow_node_submit = true'
+COPY --chown=kiliakis:kiliakis data/gpgpusim-vm-data/setup-torque.sh /home/kiliakis/
 
-#compile sdk
-# RUN cd $HOME/NVIDIA_CUDA-10.1_Samples && make -j -i -k; exit 0
-# RUN cd $HOME/install && 
+RUN mkdir /home/kiliakis/.ssh
+COPY --chown=kiliakis:kiliakis data/gpgpusim-vm-data/.ssh/* /home/kiliakis/.ssh/
+# RUN sudo chown -R kiliakis:kiliakis /home/kiliakis/.ssh
+
+RUN cd /home/kiliakis && git clone git@github.com:kiliakis/gpgpu-sim.git
+# cd gpgpu-sim && \
+# /bin/bash -c "source setup_environment" && \
+# make -j
 
 
+ENTRYPOINT ["/bin/sleep", "365d"]
 
-# install gpgpusim (optional)
-# RUN cd $HOME && git clone https://github.com/$GITUSER/gpgpu-sim.git && \
-#     cd gpgpu-sim && \
-#     source setup_environment && \
-#     make
-
-# install simulations-gpgpu
-# RUN cd $HOME && git clone --recurse-submodules https://github.com/kiliakis/simulations-gpgpu.git && \
-#    cd simulations-gpgpu/benchmarks/src/cuda/rodinia-3.1/ && \
-#    git checkout master
-
-#install gpu-app-collection
-# RUN cd $HOME && git clone https://github.com/accel-sim/gpu-app-collection.git
-
-# # COPY data/setup_environment $HOME/gpu-app-collection/src/
-
-# RUN export CUDA_INSTALL_PATH=/usr/local/cuda && \
-#     cd gpu-app-collection && \
-#     /bin/bash -c "source ./src/setup_environment"
-# RUN export CUDA_INSTALL_PATH=/usr/local/cuda && \
-#     export BINDIR=/root/gpu-app-collection/src/..//bin/10.1   && \
-#     export MAKE_ARGS="GENCODE_SM10= GENCODE_SM13= GENCODE_SM20= GENCODE_SM20= CUBLAS_LIB=cublas_static CUDNN_LIB=cudnn_static" && \
-#     export GPUAPPS_SETUP_ENVIRONMENT_WAS_RUN=1&& \
-#     export GPUAPPS_ROOT=/root/gpu-app-collection/src/../  && \
-#     export CUDA_PATH=/usr/local/cuda&& \
-#     export NVDIA_COMPUTE_SDK_LOCATION=&& \
-#     export CUDA_VERSION=10.1  && \
-#     export CUDA_VERSION_MAJOR=10  && \
-#     export CUDAHOME=/usr/local/cuda   && \
-#     export BINSUBDIR=release  && \
-#     export CUDA_CPPFLAGS="-gencode=arch=compute_30,code=compute_30 -gencode=arch=compute_35,code=compute_35 -gencode=arch=compute_50,code=compute_50 -gencode=arch=compute_60,code=compute_60 -gencode=arch=compute_62,code=compute_62 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_75,code=compute_75 --cudart shared"  && \
-#     export NVCC_ADDITIONAL_ARGS="--cudart shared"   && \
-#     export GENCODE_FLAGS="-gencode=arch=compute_30,code=compute_30 -gencode=arch=compute_35,code=compute_35 -gencode=arch=compute_50,code=compute_50 -gencode=arch=compute_60,code=compute_60 -gencode=arch=compute_62,code=compute_62 -gencode=arch=compute_70,code=compute_70 -gencode=arch=compute_75,code=compute_75" && \
-#     cd $HOME/gpu-app-collection && \
-#     make all -i -j -C ./src; exit 0
-#     sh get_data.sh; exit 0
-
-# RUN ln -s $HOME/NVIDIA_CUDA-10.1_Samples/bin/x86_64/linux/release $HOME/gpu-app-collection/bin/10.1/release/sdk
-# RUN cd $HOME/gpu-app-collection && git clone https://github.com/kiliakis/native-gpu-benchmarks.git
-# COPY data/finalize_installation.sh $HOME/
-
-# . src/setup_environment; \
-# /bin/bash -c "source ./src/setup_environment"; \
 
 # setup gcc versions
 # RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 60 && \
