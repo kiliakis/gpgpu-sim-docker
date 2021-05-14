@@ -21,7 +21,8 @@ RUN apt-get update -y && apt-get install -yq build-essential apt-utils wget vim 
     zlib1g-dev flex libglu1-mesa-dev binutils-gold libboost-system-dev \
     libboost-filesystem-dev libopenmpi-dev openmpi-bin libopenmpi-dev \
     gfortran torque-server torque-client torque-mom torque-pam \
-    freeglut3 freeglut3-dev git curl python python-pip psmisc sudo
+    freeglut3 freeglut3-dev git curl python python-pip psmisc sudo \
+    libssl-dev
 
 RUN useradd -ms /bin/bash kiliakis && echo "kiliakis:kiliakis" | chpasswd && passwd -d kiliakis && \
     adduser --disabled-password kiliakis sudo && \
