@@ -27,11 +27,16 @@ RUN apt-get update -y && apt-get install -yq build-essential apt-utils wget vim 
 RUN useradd -ms /bin/bash kiliakis && echo "kiliakis:kiliakis" | chpasswd && passwd -d kiliakis && \
     adduser --disabled-password kiliakis sudo && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
 USER kiliakis
 WORKDIR /home/kiliakis
 
 RUN mkdir /home/kiliakis/git && mkdir /home/kiliakis/install && mkdir /home/kiliakis/simulations-gpgpu
 
+RUN cd /home/kiliakis/install && wget https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh && \
+    bash miniconda.sh -b -p /home/kiliakis/install/miniconda2 && \
+    echo "export PATH=/home/kiliakis/install/miniconda2/bin:$PATH" >> /home/kiliakis/.bashrc
+# python2 -m pip install cycler pyyaml numpy
 # make directories
 # RUN mkdir /home/kiliakis/git && mkdir /home/kiliakis/install && mkdir /home/kiliakis/simulations-gpgpu
 
@@ -46,9 +51,9 @@ COPY --chown=kiliakis:kiliakis data/gpgpusim-vm-data/simulations-gpgpu /home/kil
 # apt-get update -y && \
 # apt-get -yq install python3.7
 
-cd /home/kiliakis/install && curl https://bootstrap.pypa.io/pip/3.4/get-pip.py -o get-pip.py && \
-    python3 get-pip.py --user && \
-    python3 -m pip install --user pyyaml numpy cycler
+# cd /home/kiliakis/install && curl https://bootstrap.pypa.io/pip/3.4/get-pip.py -o get-pip.py && \
+#     python3 get-pip.py --user && \
+#     python3 -m pip install --user pyyaml numpy cycler
 
 
 #RUN cd git && git clone https://github.com/NVIDIA/cuda-samples.git cuda-11.2-samples && \
@@ -105,6 +110,9 @@ RUN cd /home/kiliakis && git clone git@github.com:kiliakis/gpgpu-sim.git
 # cd gpgpu-sim && \
 # /bin/bash -c "source setup_environment" && \
 # make -j
+RUN echo "export PATH=/home/kiliakis/install/miniconda2/bin:$PATH" >> /home/kiliakis/.bashrc && \
+    export PATH=/home/kiliakis/install/miniconda2/bin:$PATH && \
+    python -m pip install pyyaml cycler numpy
 
 
 ENTRYPOINT ["/bin/sleep", "365d"]
